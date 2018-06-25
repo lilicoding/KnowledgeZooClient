@@ -1,0 +1,11 @@
+# for Python
+*.pyc
+
+# for Java
+*.class
+hs_err_pid*
+/bin/
+
+# Eclipse project file
+.classpath
+.project

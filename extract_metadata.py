@@ -7,7 +7,7 @@ import json
 import ast
 from subprocess import Popen, PIPE, TimeoutExpired
 
-CMD = './runtools.sh'
+CMD = './extract_metadata.sh'
 
 
 def simplify(output):
@@ -49,7 +49,7 @@ def simplify(output):
             return '.'.join(parts)
 
     def remove_u(line):
-        if not line.startswith('\w'):
+        if line.startswith('{'):
             return None
         parts = line.split(' ', 1)
         if len(parts) == 1:
@@ -179,30 +179,18 @@ def run(apk, aapt, timeout):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Collect APK knowledge \
-                                     and write to a file named "result"')
+    parser = argparse.ArgumentParser(description='APK metadata extraction')
     parser.add_argument('apk', type=str,
                         help='path to the APK')
-    parser.add_argument('aapt', type=str,
-                        help='path to aapt excutable')
     parser.add_argument('-t', '--timeout', type=int, metavar='seconds',
                         default=None, help='max time to wait for the \
                         analysis. If not given, it will wait until \
                         the analysis finish.')
-    parser.add_argument('-d', '--dir', type=str, default='./',
-                        help='write the result file to the given directory. \
-                        If not given, it will be written locally.')
     args = parser.parse_args()
     if not os.path.isfile(args.apk):
         sys.exit('APK file does not exist!')
-    if not os.path.isfile(args.aapt) and os.access(args.aapt, os.X_OK):
-        sys.exit('aapt tool are needed and required to be excutable!')
-    if not os.path.isdir(args.dir):
-        sys.exit('The givern directory does not exist!')
-    result = run(args.apk, args.aapt, args.timeout)
-    with open(os.path.join(args.dir, 'result'), 'w') as file:
-        json.dump(result, file, indent=2)
-
+    result = run(args.apk, "aapt", args.timeout)
+    json.dump(result, sys.stdout, indent=2)
 
 if __name__ == '__main__':
     main()
