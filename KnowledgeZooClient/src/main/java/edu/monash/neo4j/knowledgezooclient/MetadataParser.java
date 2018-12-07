@@ -31,6 +31,14 @@ public class MetadataParser
 		apkInfos = gson.fromJson(reader, listType);
 	}
 	
+	public static Map<String, ApkInfo> parseJson(String inputJson) {
+		TypeToken<Map<String, ApkInfo>> token = new TypeToken<Map<String, ApkInfo>>() {};
+		Type listType = token.getType();
+		
+		apkInfos = gson.fromJson(inputJson, listType);
+		return apkInfos;
+	}
+	
 	public static IntentFilterInfo parseIntentFilter(String intentFilterStr)
 	{
 		 return gson.fromJson(intentFilterStr, IntentFilterInfo.class);

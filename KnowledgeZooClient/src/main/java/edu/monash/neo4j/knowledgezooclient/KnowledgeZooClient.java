@@ -2,7 +2,10 @@ package edu.monash.neo4j.knowledgezooclient;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import edu.monash.neo4j.knowledgezooclient.csv.CsvHeader;
 import edu.monash.neo4j.knowledgezooclient.csv.CsvImportClient;
@@ -63,8 +66,30 @@ public class KnowledgeZooClient
 		}
 	}
 	
-	public static void showErrorMessage()
+	private static void showErrorMessage()
 	{
 		throw new RuntimeException("Parameter Error, Usage: -csv (or -cypher) inputJsonPath");
+	}
+	
+	// public API
+	
+	/**
+	 * parse json and conver it to cypher scripts. json contains metadata of multiple apks. each apk has an identifier called sha256.
+	 * each apk requires multiple scripts(stored in a list), which can be used to create this apk info in the database.
+	 * @param json contains metadata of multiple apks
+	 * @return Map<sha256, scripts>
+	 */
+	public static Map<String, List<String>> convertJsonToScripts(String json) {
+		// parse json to ApkInfo structure
+		apkInfos = MetadataParser.parseJson(json);
+		// convert ApkInfo to scripts
+		Map<String, List<String>> scripts = new HashMap<>(apkInfos.size());
+		for (Entry<String, ApkInfo> apk : apkInfos.entrySet()) {
+			String sha256 = apk.getKey();
+			ApkInfo info = apk.getValue();
+			List<String> script = KnowledgeZooCypherBuilder.parseApkAsScriptList(info);
+			scripts.put(sha256, script);
+		}
+		return scripts;
 	}
 }
