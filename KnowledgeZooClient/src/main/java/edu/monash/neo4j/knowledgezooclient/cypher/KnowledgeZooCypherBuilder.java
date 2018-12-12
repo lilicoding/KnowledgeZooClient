@@ -21,7 +21,7 @@ public class KnowledgeZooCypherBuilder
 			public boolean add(String s) {
 				// if CypherUtils.addAttribute() cannot find the attribute, it will return ""
 				// we don't want this added to the list
-				return s.contains("" + "\n") ? false : super.add(s);
+				return s.equals("" + "\n") ? false : super.add(s);
 			}
 		};
 		

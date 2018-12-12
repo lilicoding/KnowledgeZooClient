@@ -77,7 +77,7 @@ public class KnowledgeZooClient
 	 * parse json and conver it to cypher scripts. json contains metadata of multiple apks. each apk has an identifier called sha256.
 	 * each apk requires multiple scripts(stored in a list), which can be used to create this apk info in the database.
 	 * @param json contains metadata of multiple apks
-	 * @return Map<sha256, scripts>
+	 * @return Map key: sha256, value: scripts
 	 */
 	public static Map<String, List<String>> convertJsonToScripts(String json) {
 		// parse json to ApkInfo structure

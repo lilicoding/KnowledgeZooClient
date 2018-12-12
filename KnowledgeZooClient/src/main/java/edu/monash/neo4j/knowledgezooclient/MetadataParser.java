@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,6 +30,10 @@ public class MetadataParser
 		Type listType = token.getType();
 		
 		apkInfos = gson.fromJson(reader, listType);
+		// json lack of "sha256" key. add it manually
+		for (Entry<String, ApkInfo> e : apkInfos.entrySet()) {
+			e.getValue().sha256 = e.getKey();
+		}
 	}
 	
 	public static Map<String, ApkInfo> parseJson(String inputJson) {
@@ -36,6 +41,11 @@ public class MetadataParser
 		Type listType = token.getType();
 		
 		apkInfos = gson.fromJson(inputJson, listType);
+		// json lack of "sha256" key. add it manually
+		for (Entry<String, ApkInfo> e : apkInfos.entrySet()) {
+			e.getValue().sha256 = e.getKey();
+		}
+		
 		return apkInfos;
 	}
 	
