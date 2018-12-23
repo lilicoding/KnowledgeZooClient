@@ -17,11 +17,9 @@ import edu.monash.neo4j.knowledgezooclient.cypher.IntentFilterInfo;
 
 public class MetadataParser 
 {
-	public static Map<String, ApkInfo> apkInfos;
-
 	static Gson gson = new GsonBuilder().create();
 	
-	public static void parse(String inputJsonPath) throws FileNotFoundException
+	public static Map<String, ApkInfo> parse(String inputJsonPath) throws FileNotFoundException
 	{
 		InputStream is = new FileInputStream(inputJsonPath);
 		InputStreamReader reader = new InputStreamReader(is);
@@ -29,23 +27,23 @@ public class MetadataParser
 		TypeToken<Map<String, ApkInfo>> token = new TypeToken<Map<String, ApkInfo>>() {};
 		Type listType = token.getType();
 		
-		apkInfos = gson.fromJson(reader, listType);
+		Map<String, ApkInfo> apkInfos = gson.fromJson(reader, listType);
 		// json lack of "sha256" key. add it manually
 		for (Entry<String, ApkInfo> e : apkInfos.entrySet()) {
 			e.getValue().sha256 = e.getKey();
 		}
+		return apkInfos;
 	}
 	
 	public static Map<String, ApkInfo> parseJson(String inputJson) {
 		TypeToken<Map<String, ApkInfo>> token = new TypeToken<Map<String, ApkInfo>>() {};
 		Type listType = token.getType();
 		
-		apkInfos = gson.fromJson(inputJson, listType);
+		Map<String, ApkInfo> apkInfos = gson.fromJson(inputJson, listType);
 		// json lack of "sha256" key. add it manually
 		for (Entry<String, ApkInfo> e : apkInfos.entrySet()) {
 			e.getValue().sha256 = e.getKey();
 		}
-		
 		return apkInfos;
 	}
 	

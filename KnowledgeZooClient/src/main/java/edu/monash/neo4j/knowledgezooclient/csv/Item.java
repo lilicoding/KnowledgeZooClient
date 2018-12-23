@@ -21,8 +21,8 @@ public class Item
 	
 	public long dexDateTimeInMillis;
 	public long vtScanDateTimeInMillis;
-	
-	public Item(String line)
+
+	public void parse(String line)
 	{
 		String[] strs = line.split(",");
 		sha256 = strs[0];

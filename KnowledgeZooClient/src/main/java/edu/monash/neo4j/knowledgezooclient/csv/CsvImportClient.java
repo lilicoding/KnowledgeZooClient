@@ -24,11 +24,8 @@ public class CsvImportClient
 		
 		try 
 		{
-			AndroZooParser.parse(latestCsvPath);
-			apks = AndroZooParser.apks;
-			
-			MetadataParser.parse(inputJsonPath);
-			apkInfos = MetadataParser.apkInfos;
+			apkInfos = MetadataParser.parse(inputJsonPath);
+			apks = AndroZooParser.parse(latestCsvPath, apkInfos.keySet());
 		} 
 		catch (IOException e) 
 		{
@@ -37,6 +34,9 @@ public class CsvImportClient
 		
 		modelConstruction();
 		model2csv();
+		
+		apkInfos = null;
+		apks = null;
 	}
 	
 	public static void model2csv()
@@ -117,18 +117,29 @@ public class CsvImportClient
 					relationshipSB = appendRelationship(relationshipSB, c.compId, ca.categoryId, "Has");
 				}
 			}
+			
+			// write csv of this apk into file, to avoid over-sized StringBuilder
+			CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "apk.csv", apkSB.toString(), true);
+			CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "cert.csv", certSB.toString(), true);
+			CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "perm.csv", permSB.toString(), true);
+			CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "pkg.csv", pkgSB.toString(), true);
+			CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "market.csv", marketSB.toString(), true);
+			CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "comp.csv", compSB.toString(), true);
+			CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "action.csv", actionSB.toString(), true);
+			CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "category.csv", categorySB.toString(), true);
+			
+			CommonUtils.writeResultToFile(csvPath + File.separator + "relationship_" + "all.csv", relationshipSB.toString(), true);
+			// clear all contents of StringBuilders to let it be able to construct next apk
+			apkSB.setLength(0);
+			certSB.setLength(0);
+			permSB.setLength(0);
+			pkgSB.setLength(0);
+			marketSB.setLength(0);
+			compSB.setLength(0);
+			actionSB.setLength(0);
+			categorySB.setLength(0);
+			relationshipSB.setLength(0);
 		}
-		
-		CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "apk.csv", apkSB.toString(), true);
-		CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "cert.csv", certSB.toString(), true);
-		CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "perm.csv", permSB.toString(), true);
-		CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "pkg.csv", pkgSB.toString(), true);
-		CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "market.csv", marketSB.toString(), true);
-		CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "comp.csv", compSB.toString(), true);
-		CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "action.csv", actionSB.toString(), true);
-		CommonUtils.writeResultToFile(csvPath + File.separator + "node_" + "category.csv", categorySB.toString(), true);
-		
-		CommonUtils.writeResultToFile(csvPath + File.separator + "relationship_" + "all.csv", relationshipSB.toString(), true);
 	}
 	
 	public static StringBuilder appendNode(StringBuilder sb, String nodeStr)

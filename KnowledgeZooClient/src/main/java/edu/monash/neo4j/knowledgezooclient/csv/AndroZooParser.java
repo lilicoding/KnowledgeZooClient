@@ -4,14 +4,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class AndroZooParser 
 {
-	public static Map<String, APK> apks = new HashMap<String, APK>();
-	
-	public static void parse(String androzooDataPath) throws IOException
+	public static Map<String, APK> parse(String androzooDataPath, Set<String> sha256FromJson) throws IOException
 	{
+		Map<String, APK> apks = new HashMap<String, APK>();
 		BufferedReader br = new BufferedReader(new FileReader(androzooDataPath));
+		Item item = new Item();
 		
 		String line;
 		while ((line = br.readLine()) != null)
@@ -20,8 +21,12 @@ public class AndroZooParser
 			{
 				continue;
 			}
-			
-			Item item = new Item(line);
+
+			item.parse(line);
+			// we only interested in the apks which is in the json
+			// this can significantly avoid OutOfMemory exception
+			if (!sha256FromJson.contains(item.sha256))
+				continue;
 			
 			APK apk = new APK();
 			apk.apkId = item.sha256;
@@ -63,6 +68,7 @@ public class AndroZooParser
 			apks.put(apk.apkId, apk);
 		}
 		
-		br.close();	
+		br.close();
+		return apks;
 	}
 }
